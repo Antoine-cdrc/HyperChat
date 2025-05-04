@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="card shadow-lg p-4" style="width: 100%; max-width: 700px;">
+            <h2 class="mb-4 text-center">Créer un compte</h2>
+
+            {{ form_start(registrationForm) }}
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.username) }}
+                    {{ form_widget(registrationForm.username, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.email) }}
+                    {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.nom) }}
+                    {{ form_widget(registrationForm.nom, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.prenom) }}
+                    {{ form_widget(registrationForm.prenom, {'attr': {'class': 'form-control'}}) }}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.dateNaissance) }}
+                    {{ form_widget(registrationForm.dateNaissance, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.profession) }}
+                    {{ form_widget(registrationForm.profession, {'attr': {'class': 'form-control'}}) }}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.ville) }}
+                    {{ form_widget(registrationForm.ville, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.password) }}
+                    {{ form_widget(registrationForm.password, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">S'inscrire</button>
+            </div>
+
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+{% endblock %}

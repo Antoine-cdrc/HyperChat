@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Liste des utilisateurs</h1>
+
+    <div class="row g-4">
+        {% for user in users %}
+            {% if user.id != app.user.id %}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card user-card shadow-sm p-3">
+                        <img src="https://via.placeholder.com/150" class="card-img-top rounded-circle profile-picture mx-auto d-block" alt="Photo de profil">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">
+                                {{ user.username }}
+                                <small class="text-muted">({{ date().diff(user.dateNaissance).y }} ans)</small>
+                            </h5>
+                            <p class="card-text">{{ user.nom }} {{ user.prenom }}</p>
+
+                            {% set friendRequest = friendRequests|filter(request => request.receiver == user)|first %}
+
+                            {% if friendRequest %}
+                                {% if friendRequest.status == 'pending' %}
+                                    <a href="{{ path('friend_accept', {id: friendRequest.id}) }}" class="btn btn-primary">Accepter</a>
+                                    <a href="{{ path('friend_refuse', {id: friendRequest.id}) }}" class="btn btn-danger">Refuser</a>
+                                {% elseif friendRequest.status == 'accepted' %}
+                                    <a href="#" class="btn btn-primary">Message</a>
+                                {% endif %}
+                            {% else %}
+                                <a href="{{ path('friend_request', {id: user.id}) }}" class="btn btn-success">Ajouter</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
