@@ -30,6 +30,9 @@ class Chat
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twilioChannelSid = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isRead = false;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -92,6 +95,17 @@ class Chat
     public function setTwilioChannelSid(?string $twilioChannelSid): static
     {
         $this->twilioChannelSid = $twilioChannelSid;
+        return $this;
+    }
+
+    public function isRead(): bool
+    {
+        return $this->isRead;
+    }
+
+    public function setIsRead(bool $isRead): self
+    {
+        $this->isRead = $isRead;
         return $this;
     }
 }

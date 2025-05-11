@@ -38,9 +38,38 @@ class ChatController extends AbstractController
             ['createdAt' => 'ASC']
         );
 
+        // Marquer les messages reçus comme lus
+        foreach ($chats as $chat) {
+            if ($chat->getReceiver() === $currentUser && !$chat->isRead()) {
+                $chat->setIsRead(true);
+            }
+        }
+        $this->entityManager->flush();
+
+        // Récupérer la liste des amis
+        $friends = $this->entityManager->getRepository(User::class)
+            ->createQueryBuilder('u')
+            ->where('u.id != :currentUser')
+            ->setParameter('currentUser', $currentUser->getId())
+            ->getQuery()
+            ->getResult();
+
+        // Marquer les messages non lus
+        foreach ($friends as $f) {
+            $unreadMessages = $this->entityManager->getRepository(Chat::class)
+                ->findBy([
+                    'sender' => $f,
+                    'receiver' => $currentUser,
+                    'isRead' => false
+                ]);
+            $f->hasUnreadMessages = count($unreadMessages) > 0;
+        }
+
         return $this->render('chat/show.html.twig', [
             'friend' => $friend,
+            'currentFriend' => $friend,
             'chats' => $chats,
+            'friends' => $friends,
         ]);
     }
 
@@ -66,6 +95,7 @@ class ChatController extends AbstractController
         $chat->setSender($currentUser);
         $chat->setReceiver($friend);
         $chat->setMessage($message);
+        $chat->setIsRead(false); // Le message est non lu par défaut
 
         // Envoyer le message via Twilio
         try {

@@ -27,16 +27,61 @@
             font-size: 0.8rem;
             opacity: 0.7;
         }
+        .friends-list {
+            height: 70vh;
+            overflow-y: auto;
+        }
+        .friend-item {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .friend-item:hover {
+            background-color: #f8f9fa;
+        }
+        .friend-item.active {
+            background-color: #e9ecef;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
-<div class="container mt-4">
+<div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
+        <!-- Liste des amis -->
+        <div class="col-md-3">
             <div class="card">
                 <div class="card-header">
+                    <h5 class="mb-0">Mes amis</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="friends-list">
+                        {% for friend in friends %}
+                            <a href="{{ path('app_chat_show', {id: friend.id}) }}" class="text-decoration-none text-dark">
+                                <div class="friend-item {% if friend.id == currentFriend.id %}active{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ friend.username }}</strong>
+                                        </div>
+                                        {% if friend.hasUnreadMessages %}
+                                            <span class="badge bg-primary">Nouveau</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zone de chat -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h2 class="mb-0">Chat avec {{ friend.username }}</h2>
+                    <a href="{{ path('home') }}" class="btn btn-secondary">Retour à l'accueil</a>
                 </div>
                 <div class="card-body">
                     <div class="chat-container" id="chat-messages">
@@ -46,7 +91,7 @@
                                     {{ chat.message }}
                                 </div>
                                 <div class="message-time">
-                                    {{ chat.createdAt|date('H:i') }}
+                                    Le {{ chat.createdAt|date('d/m à H:i') }}
                                 </div>
                             </div>
                         {% endfor %}
