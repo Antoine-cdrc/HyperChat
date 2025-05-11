@@ -3,39 +3,114 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-<div class="container my-5">
-    <h1 class="text-center mb-4">Liste des utilisateurs</h1>
+<div class="container mt-4">
+    <div class="row">
+        <!-- Liste des demandes d'amis reçues -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Demandes d'amis reçues</h5>
+                </div>
+                <div class="card-body">
+                    {% if receivedRequests|length > 0 %}
+                        {% for request in receivedRequests %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    {{ request.sender.username }}
+                                </div>
+                                <div>
+                                    <a href="{{ path('friend_accept', {id: request.id}) }}" class="btn btn-success btn-sm">Accepter</a>
+                                    <a href="{{ path('friend_refuse', {id: request.id}) }}" class="btn btn-danger btn-sm">Refuser</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aucune demande d'ami reçue</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-    <div class="row g-4">
-        {% for user in users %}
-            {% if user.id != app.user.id %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <div class="card user-card shadow-sm p-3">
-                        <img src="https://via.placeholder.com/150" class="card-img-top rounded-circle profile-picture mx-auto d-block" alt="Photo de profil">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">
-                                {{ user.username }}
-                                <small class="text-muted">({{ date().diff(user.dateNaissance).y }} ans)</small>
-                            </h5>
-                            <p class="card-text">{{ user.nom }} {{ user.prenom }}</p>
+        <!-- Liste des demandes d'amis envoyées -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Demandes d'amis envoyées</h5>
+                </div>
+                <div class="card-body">
+                    {% if sentRequests|length > 0 %}
+                        {% for request in sentRequests %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    {{ request.receiver.username }}
+                                </div>
+                                <div>
+                                    <span class="badge bg-warning">En attente</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aucune demande d'ami envoyée</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-                            {% set friendRequest = friendRequests|filter(request => request.receiver == user)|first %}
+        <!-- Liste des amis -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Mes amis</h5>
+                </div>
+                <div class="card-body">
+                    {% if friends|length > 0 %}
+                        {% for friend in friends %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    {{ friend.username }}
+                                </div>
+                                <div>
+                                    <a href="{{ path('app_chat_show', {id: friend.id}) }}" class="btn btn-primary btn-sm">Message</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Vous n'avez pas encore d'amis</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
-                            {% if friendRequest %}
-                                {% if friendRequest.status == 'pending' %}
-                                    <a href="{{ path('friend_accept', {id: friendRequest.id}) }}" class="btn btn-primary">Accepter</a>
-                                    <a href="{{ path('friend_refuse', {id: friendRequest.id}) }}" class="btn btn-danger">Refuser</a>
-                                {% elseif friendRequest.status == 'accepted' %}
-                                    <a href="#" class="btn btn-primary">Message</a>
-                                {% endif %}
-                            {% else %}
-                                <a href="{{ path('friend_request', {id: user.id}) }}" class="btn btn-success">Ajouter</a>
-                            {% endif %}
-                        </div>
+    <!-- Liste des utilisateurs -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Utilisateurs</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for user in users %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ user.username }}</h5>
+                                        <p class="card-text">
+                                            {{ user.prenom }} {{ user.nom }}<br>
+                                            {% if user.ville %}
+                                                <small class="text-muted">{{ user.ville }}</small>
+                                            {% endif %}
+                                        </p>
+                                        <a href="{{ path('friend_request', {id: user.id}) }}" class="btn btn-primary">Ajouter en ami</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
-            {% endif %}
-        {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

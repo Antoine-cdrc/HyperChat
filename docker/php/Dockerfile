@@ -10,6 +10,11 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
+# Installer Node.js et npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest
+
 # Nettoyage
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -23,10 +28,26 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash && \
 
 # Configuration de l'application
 WORKDIR /var/www/html
+
+# Copier les fichiers de configuration npm et composer d'abord
+COPY package*.json ./
+COPY composer.json composer.lock ./
+
+# Installer les dépendances
+RUN composer install --no-scripts --no-autoloader && \
+    npm install
+
+# Copier le reste des fichiers
 COPY . .
-RUN composer install --no-interaction --optimize-autoloader && \
+
+# Configuration Git et permissions
+RUN git config --global --add safe.directory /var/www/html && \
     chown -R www-data:www-data /var/www/html && \
     chmod -R 775 /var/www/html/var
+
+# Finaliser l'installation
+RUN composer dump-autoload --optimize && \
+    npm run build
 
 # Script de démarrage
 RUN echo '#!/bin/bash\nsymfony server:start --port=8000 --allow-http --allow-all-ip' > /usr/local/bin/start.sh && \

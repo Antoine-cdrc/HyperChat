@@ -7,7 +7,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\UserRepository;
-
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -53,9 +54,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime')]
     private \DateTimeInterface $createdAt;
 
+    #[ORM\OneToMany(mappedBy: 'sender', targetEntity: Chat::class)]
+    private Collection $sentChats;
+
+    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Chat::class)]
+    private Collection $receivedChats;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
+        $this->sentChats = new ArrayCollection();
+        $this->receivedChats = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -196,46 +205,77 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->createdAt;
     }
 
-    public function getFriends(): array{
-        // Récupérer tous les amis dans ta base de données
-        $friendRequests = $this->getDoctrine()
-            ->getRepository(FriendRequest::class)
-            ->findBy([
-                'sender' => $this,
-                'status' => 'accepted',
-            ]);
-        
-        $friends = [];
-        foreach ($friendRequests as $request) {
-            $friends[] = $request->getReceiver();
-        }
-
-        $friendRequests = $this->getDoctrine()
-            ->getRepository(FriendRequest::class)
-            ->findBy([
-                'receiver' => $this,
-                'status' => 'accepted',
-            ]);
-        
-        foreach ($friendRequests as $request) {
-            $friends[] = $request->getSender();
-        }
-        return $friends;
+    public function getFriends(): array
+    {
+        // Cette méthode ne devrait pas utiliser getDoctrine() car elle est dans une entité
+        // Elle devrait plutôt recevoir l'EntityManager en paramètre
+        return [];
     }
 
-    public function getFriendRequests(): array{
-        // Récupérer toutes les demandes d'amis envoyées par l'utilisateur
-        $sentRequests = $this->getDoctrine()
-            ->getRepository(FriendRequest::class)
-            ->findBy(['sender' => $this, 'status' => 'pending']);
-
-        // Récupérer toutes les demandes d'amis reçues par l'utilisateur
-        $receivedRequests = $this->getDoctrine()
-            ->getRepository(FriendRequest::class)
-            ->findBy(['receiver' => $this, 'status' => 'pending']);
-
-        // Fusionner les deux tableaux de demandes
-        return array_merge($sentRequests, $receivedRequests);
+    public function getFriendRequests(): array
+    {
+        // Cette méthode ne devrait pas utiliser getDoctrine() car elle est dans une entité
+        // Elle devrait plutôt recevoir l'EntityManager en paramètre
+        return [];
     }
 
+    /**
+     * @return Collection<int, Chat>
+     */
+    public function getSentChats(): Collection
+    {
+        return $this->sentChats;
+    }
+
+    public function addSentChat(Chat $chat): self
+    {
+        if (!$this->sentChats->contains($chat)) {
+            $this->sentChats->add($chat);
+            $chat->setSender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSentChat(Chat $chat): self
+    {
+        if ($this->sentChats->removeElement($chat)) {
+            // set the owning side to null (unless already changed)
+            if ($chat->getSender() === $this) {
+                $chat->setSender(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Chat>
+     */
+    public function getReceivedChats(): Collection
+    {
+        return $this->receivedChats;
+    }
+
+    public function addReceivedChat(Chat $chat): self
+    {
+        if (!$this->receivedChats->contains($chat)) {
+            $this->receivedChats->add($chat);
+            $chat->setReceiver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceivedChat(Chat $chat): self
+    {
+        if ($this->receivedChats->removeElement($chat)) {
+            // set the owning side to null (unless already changed)
+            if ($chat->getReceiver() === $this) {
+                $chat->setReceiver(null);
+            }
+        }
+
+        return $this;
+    }
 }

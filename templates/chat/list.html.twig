@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes conversations{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Mes conversations</h1>
+
+    {% if conversations is empty %}
+        <div class="alert alert-info">
+            Vous n'avez pas encore de conversations.
+        </div>
+    {% else %}
+        <div class="list-group">
+            {% for conversation in conversations %}
+                <a href="{{ path('app_chat_show', {id: conversation.id}) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ conversation.username }}</h5>
+                        <small>{{ conversation.email }}</small>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

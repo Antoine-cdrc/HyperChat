@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat avec {{ friend.username }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .chat-container {
+            height: 70vh;
+            overflow-y: auto;
+        }
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+        .message.sent {
+            background-color: #007bff;
+            color: white;
+            margin-left: 20%;
+        }
+        .message.received {
+            background-color: #e9ecef;
+            margin-right: 20%;
+        }
+        .message-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Chat avec {{ friend.username }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chat-container" id="chat-messages">
+                        {% for chat in chats %}
+                            <div class="message {{ chat.sender == app.user ? 'sent' : 'received' }}">
+                                <div class="message-content">
+                                    {{ chat.message }}
+                                </div>
+                                <div class="message-time">
+                                    {{ chat.createdAt|date('H:i') }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form action="{{ path('app_chat_send', {id: friend.id}) }}" method="post">
+                        <div class="input-group">
+                            <input type="text" name="message" class="form-control" placeholder="Votre message..." required>
+                            <button type="submit" class="btn btn-primary">Envoyer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Scroll to bottom of chat
+        const chatContainer = document.getElementById('chat-messages');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // Auto-refresh every 5 seconds
+        setInterval(function() {
+            location.reload();
+        }, 5000);
+    </script>
+{% endblock %}
+{% endblock %} 

@@ -24,6 +24,13 @@ class LoginController extends AbstractController
         ]);
     }
 
+    #[Route('/login_check', name: 'app_login_check')]
+    public function loginCheck(): void
+    {
+        // Cette méthode ne sera jamais appelée
+        // Le firewall intercepte la requête avant
+    }
+
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {

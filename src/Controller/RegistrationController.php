@@ -35,7 +35,7 @@ class RegistrationController extends AbstractController
 
             // Message flash et redirection vers la page de connexion
             $this->addFlash('success', 'Votre compte a été créé avec succès.');
-            // return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_login');
         }
 
         // Rendu du formulaire d'inscription
