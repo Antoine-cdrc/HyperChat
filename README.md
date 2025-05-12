@@ -120,23 +120,7 @@ Le projet utilise deux conteneurs :
 - `hyperchat-symfony-1` : Application Symfony
 - `hyperchat-database-1` : Base de données MySQL
 
-## 🤝 Contribution
-
-1. Fork le projet
-2. Créer une branche (`git checkout -b feature/AmazingFeature`)
-3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push sur la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrir une Pull Request
-
-## 📝 Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
-
-## 👥 Auteurs
-
-- Votre nom - Développeur principal
-
-## 🙏 Remerciements
+## 🙏 Technologies
 
 - Symfony
 - Twilio
